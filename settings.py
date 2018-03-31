@@ -18,6 +18,6 @@ R=100#200#00 # nr of runs
 #BEHAVIOUR = 'solo'
 BEHAVIOUR = 'gradient'
 
-MOVIE = False #False|True
+MOVIE = True #False|True
 INTERPOLATION = 'cubic'#'linear' or 'nearest'
 
