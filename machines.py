@@ -85,4 +85,4 @@ while True:
     db_update_df(db,df)
     
 #    print(df.head(1))
-    #sleep(1)
+    sleep(0.01)
