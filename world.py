@@ -22,7 +22,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.interpolate import griddata
 
 from pymongo import MongoClient
-from database import db_read_df, db_update_df, db_replace_df, db_clear
+from database import db_read_df, db_update_df, db_clear, db_update_grid,db_read_grid
 from settings import N, MAX_X, MAX_Y, R, BEHAVIOUR, MOVIE, INTERPOLATION
 from utils import rnd_vec, dist
 
@@ -62,47 +62,47 @@ df = pd.DataFrame(index=range(N),
                         'y': rnd_vec(N,MAX_Y)})
 
 db_clear(db)
-db_replace_df(db, df)
+db_update_df(db, df)
 #%%
 #df['id'] = df.index
 
 k=''
 
 
-fig, ax = plt.subplots(figsize=(10,7))
-#ax = fig.add_axes([0,0,MAX_X,MAX_Y], frameon=False)
-ax.set_xlim(0, MAX_X)
-ax.set_ylim(0, MAX_Y)
-#ax.axis([0,0,MAX_X,MAX_Y])
-scat = ax.scatter(x=df['x'],y=df['y'], marker='o')#, animated=True)
-#scat_trg = ax.scatter(x=df['x_trg'],y=df['y_trg'], marker='+')#, animated=True)
-scat_trg = ax.scatter(x=[],y=[],marker='+')#, animated=True)
 
 
 #utility = np.zeros((MAX_X,MAX_Y))
 #f#n_cost(utility, df)
 xi, yi, zi=fn_cost(df, method=INTERPOLATION)
-#fr=df.pivot('x','y','cost').fillna(0)
-#xc,yc=np.meshgrid(fr.index,fr.columns)
-contour = ax.contour(xi, yi, zi)#, levels=np.linspace(0,1,num=10))
 
-fig3d = plt.figure(figsize=(10,7))
-ax3d = fig3d.add_subplot(111,projection='3d')
+db_update_grid(db, 'world', xi, yi, zi)
+xi, yi, zi = db_read_grid(db, 'world')
+# plotting
+# scatter plot
+#fig, ax = plt.subplots(figsize=(10,7))
+#ax.set_xlim(0, MAX_X)
+#ax.set_ylim(0, MAX_Y)
+#scat = ax.scatter(x=df['x'],y=df['y'], marker='o')#, animated=True)
+#scat_trg = ax.scatter(x=[],y=[],marker='+')#, animated=True)
+## contour
+#contour = ax.contour(xi, yi, zi)#, levels=np.linspace(0,1,num=10))
+## mesh
+#fig3d = plt.figure(figsize=(10,7))
+#ax3d = fig3d.add_subplot(111,projection='3d')
+#xm,ym = np.meshgrid(xi,yi)
+#ax3d.plot_wireframe(xm,ym,zi)
 
-xm,ym = np.meshgrid(xi,yi)
 
-ax3d.plot_wireframe(xm,ym,zi)
-
-
-dfs=[df.copy()]
+#dfs=[df.copy()]
 #while k=='':
-def update(frame_number):
+#def update(frame_number):
+while True:
 #    for r in range(R):
 
 #    for x in range(MAX_X):
 #        for 
 #    distance_grid = zeros(MAX_X, )
-    global contour , utility
+    global contour #, utility
     
     # read machines information 
     df = db_read_df(db)
@@ -116,12 +116,12 @@ def update(frame_number):
         
         db_update_df(db, df)
 
-        scat.set_offsets(df[['x','y']].values)
-        scat_trg.set_offsets(df[['x_trg','y_trg']].values)
+#        scat.set_offsets(df[['x','y']].values)
+#        scat_trg.set_offsets(df[['x_trg','y_trg']].values)
 #    contour.set_array(utility)
     #scat.set_offsets(np.concatenate([df[['x','y']].values,df[['x_trg','y_trg']].values]))
-    for c in contour.collections:
-        c.remove()
+#    for c in contour.collections:
+#        c.remove()
 #    contour = ax.contour(utility,levels=np.linspace(0,1,num=10))
 #    contour = ax.contour(df.x,df.y,df.cost, levels=np.linspace(0,1,num=10))
 #    contour = ax.contour(df[['x','y','cost']])#, levels=np.linspace(0,1,num=10))
@@ -130,35 +130,39 @@ def update(frame_number):
  #   contour = ax.contour(xc,yc,fr.values)#, levels=np.linspace(0,1,num=10))
     xi, yi, zi=fn_cost(df, method=INTERPOLATION)
     
-    xm,ym = np.meshgrid(xi,yi)
+    db_update_grid(db, 'world', xi, yi, zi)
+    xi, yi, zi = db_read_grid(db, 'world')
+    
+ #   xm,ym = np.meshgrid(xi,yi)
+
 
 
 
     
 #fr=df.pivot('x','y','cost').fillna(0)
 #xc,yc=np.meshgrid(fr.index,fr.columns)
-    contour = ax.contour(xi, yi, zi)#, leve
+ #   contour = ax.contour(xi, yi, zi)#, leve
 
-    for c in ax3d.collections:
-        c.remove()
+#    for c in ax3d.collections:
+#        c.remove()
 
-    ax3d.plot_wireframe(xm,ym,zi)
+ #   ax3d.plot_wireframe(xm,ym,zi)
 
     
-    return scat, scat_trg, contour
+ #   return scat, scat_trg, contour
         
 #        k = input()
 #while True:
 #    loop(0)
-ani = anim.FuncAnimation(fig,update,frames=R,  repeat=True, interval=500)
+#ani = anim.FuncAnimation(fig,update,frames=R,  repeat=True, interval=500)
 #plt.show()
-if MOVIE:
-    ani.save(BEHAVIOUR+'.mp4')
+#if MOVIE:
+#    ani.save(BEHAVIOUR+'.mp4')
     
-ani3d = anim.FuncAnimation(fig3d,update,frames=R,  repeat=True, interval=500)
+#ani3d = anim.FuncAnimation(fig3d,update,frames=R,  repeat=True, interval=500)
 
-if MOVIE:
-    ani3d.save(BEHAVIOUR+'3D.mp4')
+#if MOVIE:
+#    ani3d.save(BEHAVIOUR+'3D.mp4')
     
-result = pd.concat(dfs)
+#result = pd.concat(dfs)
     
