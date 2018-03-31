@@ -22,12 +22,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.interpolate import griddata
 
 from pymongo import MongoClient
-from database import db_read_df, db_update_df, db_replace_df
-from settings import N, MAX_X, MAX_Y, S, MIN_D, R, BEHAVIOUR, MOVIE, INTERPOLATION
-from utils import rnd_vec
+from database import db_read_df, db_update_df, db_replace_df, db_clear
+from settings import N, MAX_X, MAX_Y, R, BEHAVIOUR, MOVIE, INTERPOLATION
+from utils import rnd_vec, dist
 
-def dist(x0, y0, x1, y1):
-    return ((x1-x0)**2 + (y1-y0)**2)**0.5
 
 def fn_cost(df, method='nearest'):
     # http://scipy-cookbook.readthedocs.io/items/Matplotlib_Gridding_irregularly_spaced_data.html
@@ -63,7 +61,7 @@ df = pd.DataFrame(index=range(N),
                   data={'x': rnd_vec(N,MAX_X),
                         'y': rnd_vec(N,MAX_Y)})
 
-
+db_clear(db)
 db_replace_df(db, df)
 #%%
 #df['id'] = df.index
@@ -109,55 +107,9 @@ def update(frame_number):
     # read machines information 
     df = db_read_df(db)
     
-    # 
-    if 'x_trg' in df.columns and 'y_trg' in df.columns:
+    # velocity has been set by machines
+    if 'u' in df.columns and 'v' in df.columns:
     
-        if BEHAVIOUR == 'solo':
-            # calc distance velocities x_target - x
-            #df['ds'] = dist(df['x'], df['y'], df['x_trg'], df['y_trg'])
-            #df['dx'] = df['x_trg'] - df['x']
-            #df['dy'] = df['y_trg'] - df['y']
-            col_x_trg, col_y_trg = 'x_trg', 'y_trg'                
-    
-        elif BEHAVIOUR == 'nearest_target':
-            # we travel via the robot nearest to target if any
-            # for default we take original target
-            df['x_near'] = df['x_trg']
-            df['y_near'] = df['y_trg']
-            for ix, row in df.iterrows():
-                #print(i,r)
-                neighbour_ix = dist(row.x_trg,row.y_trg,df.x,df.y).idxmin()
-                # if I am not the nearest set nearest as target
-                if ix!=neighbour_ix:
-                    df.loc[ix,'x_near'] = df.loc[neighbour_ix,'x']
-                    df.loc[ix,'y_near'] = df.loc[neighbour_ix,'y']
-            
-            col_x_trg, col_y_trg = 'x_near', 'y_near'
-        elif BEHAVIOUR == 'gradient':
-            #utility = fn_cost(utility, df)
-            #fn_cost(df)                
-            # dummy                
-            col_x_trg, col_y_trg = 'x_trg', 'y_trg'                
-    
-        else:
-            raise NotImplemented
-            
-        df['ds'] = dist(df['x'], df['y'], df[col_x_trg], df[col_y_trg])
-        df['dx'] = df[col_x_trg] - df['x']
-        df['dy'] = df[col_y_trg] - df['y']
-            
-                    
-                
-                
-    #       following does not work only one label please (complex nrs could work in 2D :-)        
-    #        pd.merge_asof(df,df[['x','y']],left_on=['x_trg','y_trg'], right_on=['x','y'], direction='nearest', suffixes=('','_waypoint'))
-            
-        
-        # speed is max(the remaining dist, S)
-        selection = df['ds']>0
-        fr = df.loc[selection]
-        df.loc[selection,'u'] = fr.ds.clip_upper(S) * fr['dx']/fr['ds']
-        df.loc[selection,'v'] = fr.ds.clip_upper(S) * fr['dy']/fr['ds']
         
         df['x'] = df['x'] + df['u']
         df['y'] = df['y'] + df['v']
@@ -192,14 +144,6 @@ def update(frame_number):
 
     ax3d.plot_wireframe(xm,ym,zi)
 
-    if 'x_trg' in df.columns and 'y_trg' in df.columns:
-
-        # target reached ?
-        selection = df['ds'].abs()<MIN_D
-        l = len(df.loc[selection])
-        df.loc[selection,'x_trg'] = rnd_vec(l,MAX_X)
-        df.loc[selection, 'y_trg'] = rnd_vec(l,MAX_Y)
-        dfs.append(df.copy())
     
     return scat, scat_trg, contour
         

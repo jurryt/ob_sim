@@ -7,6 +7,10 @@ Created on Sat Mar 31 06:59:03 2018
 """
 import pandas as pd
 
+def db_clear(db):
+    machines = db.machines
+    machines.remove()
+
 def db_replace_df(db, df):
     machines = db.machines
     for ix, row in df.iterrows():
