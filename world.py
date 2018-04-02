@@ -24,7 +24,7 @@ from settings import N, MAX_X, MAX_Y, BEHAVIOUR, INTERPOLATION, HOST, PORT
 from utils import rnd_vec, dist
 import socket
 
-from socket_functions import sock_send_df
+from socket_functions import sock_send_df, sock_send_grid
 
 def fn_cost(df, method='nearest'):
     # http://scipy-cookbook.readthedocs.io/items/Matplotlib_Gridding_irregularly_spaced_data.html
@@ -59,6 +59,12 @@ db_clear(db)
 df = pd.DataFrame(index=range(N), 
                   data={'x': rnd_vec(N,MAX_X),
                         'y': rnd_vec(N,MAX_Y)})
+    
+df['blender_name'] = ''
+df['blender_type'] = 'object'
+
+df.loc[0,'blender_name'] = 'car.001'
+    
 db_update_df(db, df)
 
 xi, yi, zi=fn_cost(df, method=INTERPOLATION)
@@ -80,4 +86,5 @@ while True:
     db_update_grid(db, 'world', xi, yi, zi)
     
     sock_send_df(sock, df)
+    sock_send_grid(sock, 'world', xi, yi, zi)
     
