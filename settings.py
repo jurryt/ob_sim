@@ -21,3 +21,5 @@ BEHAVIOUR = 'gradient'
 MOVIE = True #False|True
 INTERPOLATION = 'cubic'#'linear' or 'nearest'
 
+HOST = 'localhost'
+PORT = 10000

@@ -20,9 +20,11 @@ from scipy.interpolate import griddata
 
 from pymongo import MongoClient
 from database import db_read_df, db_update_df, db_clear, db_update_grid,db_read_grid
-from settings import N, MAX_X, MAX_Y, BEHAVIOUR, INTERPOLATION
+from settings import N, MAX_X, MAX_Y, BEHAVIOUR, INTERPOLATION, HOST, PORT
 from utils import rnd_vec, dist
+import socket
 
+from socket_functions import sock_send_df
 
 def fn_cost(df, method='nearest'):
     # http://scipy-cookbook.readthedocs.io/items/Matplotlib_Gridding_irregularly_spaced_data.html
@@ -46,6 +48,9 @@ def fn_cost(df, method='nearest'):
 # setup database
 client = MongoClient()
 db = client.world    
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.connect((HOST, PORT))
 
 print(BEHAVIOUR)
 
@@ -73,4 +78,6 @@ while True:
     xi, yi, zi=fn_cost(df, method=INTERPOLATION)
     
     db_update_grid(db, 'world', xi, yi, zi)
+    
+    sock_send_df(sock, df)
     
