@@ -25,7 +25,8 @@ def set_df(df):
         #df.loc[s, 'by'] = df.loc[s, 'y'] + self._box[0]
     #        fr['by'] = fr['y'] + self._box[1]
      #       fr['bz'] = df['z'] + self._box[2]
-        
+    
+    df.loc[s,'radius']     = 0.5
      
     if BEHAVIOUR == 'solo':
         # calc distance velocities x_target - x

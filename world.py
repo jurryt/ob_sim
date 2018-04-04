@@ -66,6 +66,8 @@ df['blender_type'] = 'object'
 df.loc[0,'blender_name'] = 'car.001'
 
 df.loc[:N/2,'machine_type'] = 'simplebot'
+df['radius'] = 0.0
+df['collision'] = False
     
 db_update_df(db, df)
 
@@ -79,8 +81,17 @@ while True:
     
     # velocity has been set by machines
     if 'u' in df.columns and 'v' in df.columns:
-        df['x'] = df['x'] + df['u']
-        df['y'] = df['y'] + df['v']
+        
+        df['x_new'] = df['x'] + df['u']
+        df['y_new'] = df['y'] + df['v']
+        
+        for ix, row in df.iterrows():
+            fr=df[df.index!=ix]
+            df.loc[ix,'collision'] = any(dist(row.x_new,row.y_new,fr.x_new,fr.y_new)<=(fr.radius+row.radius))
+        
+        df.loc[~df.collision,'x'] = df.loc[~df.collision,'x_new']
+        df.loc[~df.collision,'y'] = df.loc[~df.collision,'y_new']
+        
         db_update_df(db, df)
 
     xi, yi, zi=fn_cost(df, method=INTERPOLATION)

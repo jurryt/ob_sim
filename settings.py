@@ -6,7 +6,7 @@ Created on Sat Mar 31 07:14:08 2018
 @author: jur
 """
 
-N = 100#100#3#10
+N = 50#100#100#3#10
 MAX_X = -20#60
 MAX_Y = -20#30
 
