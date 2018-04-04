@@ -6,11 +6,11 @@ Created on Sat Mar 31 07:14:08 2018
 @author: jur
 """
 
-N = 10#100#3#10
+N = 100#100#3#10
 MAX_X = -20#60
 MAX_Y = -20#30
 
-S = 1.0#.1#2 # fixed speed
+S = 0.1#1.0#.1#2 # fixed speed
 MIN_D = 1e-4 # precision / minimal measurable distance
 R=100#200#00 # nr of runs
 

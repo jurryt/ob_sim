@@ -60,10 +60,12 @@ df = pd.DataFrame(index=range(N),
                   data={'x': rnd_vec(N,MAX_X),
                         'y': rnd_vec(N,MAX_Y)})
     
+# blender specific columns
 df['blender_name'] = ''
 df['blender_type'] = 'object'
-
 df.loc[0,'blender_name'] = 'car.001'
+
+df.loc[:N/2,'machine_type'] = 'simplebot'
     
 db_update_df(db, df)
 

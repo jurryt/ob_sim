@@ -44,7 +44,7 @@ def db_read_df(db):
         rows.append(row)
     
     df=pd.DataFrame(rows)
-    df.set_index('_id')
+    df.set_index('_id', inplace=True)
     
     return df
 
