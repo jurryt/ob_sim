@@ -17,7 +17,7 @@ def db_clear(db):
 def db_replace_df(db, df):
     machines = db.machines
     for ix, row in df.iterrows():
-        machines.replace_one({'_id': ix},
+        machines.replace_one({'_id': int(ix)},
                                    row.to_dict(),
                                    upsert=True)
 
@@ -25,7 +25,7 @@ def db_replace_df(db, df):
 def db_update_df(db, df):
     machines = db.machines
     for ix, row in df.iterrows():
-        machines.update_one({'_id': ix},
+        machines.update_one({'_id': int(ix)},
                                    {'$set': row.to_dict()},
                                    upsert=True)
 
