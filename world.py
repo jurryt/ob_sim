@@ -124,7 +124,7 @@ df.loc[0,'blender_name'] = 'car.001'
 
 #df.loc[:N/2,'machine_type'] = 'simplebot'
 df['machine_type'] = 'simplebot'
-df['radius'] = 0.0
+df['radius'] = 0.5
 df['collision'] = False
 df['cost'] = 0.0
 #df['u']=0.0

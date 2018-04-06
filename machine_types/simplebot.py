@@ -30,12 +30,14 @@ def set_df(df):
         df.loc[ix,'y_near'] = df.loc[neighbour_ix,'y']
    
     # reward
-    df.loc[s,'ds'] = dist(df.loc[s,'x'], df.loc[s,'y'], df.loc[s,col_x_trg], df.loc[s,col_y_trg])
+    reward = 1.0
+    df.loc[s,'ds'] = reward * dist(df.loc[s,'x'], df.loc[s,'y'], df.loc[s,col_x_trg], df.loc[s,col_y_trg])
     df.loc[s,'dx'] = df.loc[s,col_x_trg] - df.loc[s,'x']
     df.loc[s,'dy'] = df.loc[s,col_y_trg] - df.loc[s,'y']
 
     # penalty
-    df.loc[s,'ds1'] = dist(df.loc[s,'x'], df.loc[s,'y'], df.loc[s,'x_near'], df.loc[s,'y_near'])
+    penalty = 1.0#1.0
+    df.loc[s,'ds1'] = penalty * dist(df.loc[s,'x'], df.loc[s,'y'], df.loc[s,'x_near'], df.loc[s,'y_near'])
     df.loc[s,'dx1'] = -(df.loc[s,'x_near'] - df.loc[s,'x'])
     df.loc[s,'dy1'] = -(df.loc[s,'y_near'] - df.loc[s,'y'])
 
