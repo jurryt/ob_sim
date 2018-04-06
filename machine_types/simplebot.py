@@ -68,6 +68,13 @@ def set_df(df):
     fr = df.loc[selection]
     df.loc[selection,'u'] = fr.ds.clip_upper(S) * fr['dx']/fr['ds']
     df.loc[selection,'v'] = fr.ds.clip_upper(S) * fr['dy']/fr['ds']
+    
+    # on collision turn left
+    selection = s & (df['collision'])
+    u = df.loc[selection, 'v']
+    v = -df.loc[selection, 'u']
+    df.loc[selection, 'u'] = u
+    df.loc[selection, 'v'] = v
 
     # determine if target is reached and set new target
     # new target should come from blockchain
