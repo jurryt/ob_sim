@@ -70,6 +70,7 @@ def update(frame_number):
     
     return scat, scat_trg, contour
 
+    
 # repeat or make movie        
 ani = anim.FuncAnimation(fig,update,frames=R,  repeat=not MOVIE, interval=500)
 
@@ -80,5 +81,5 @@ ani3d = anim.FuncAnimation(fig3d,update,frames=R,  repeat=not MOVIE, interval=50
 
 if MOVIE:
     ani3d.save(BEHAVIOUR+'3D.mp4')
-    
-    
+
+        
