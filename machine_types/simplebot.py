@@ -26,7 +26,7 @@ def set_df(df):
     #        fr['by'] = fr['y'] + self._box[1]
      #       fr['bz'] = df['z'] + self._box[2]
     
-    df.loc[s,'radius']     = 0.5
+    df.loc[s,'radius']     = 0.05
      
     if BEHAVIOUR == 'solo':
         # calc distance velocities x_target - x
@@ -81,6 +81,8 @@ def set_df(df):
     selection = s & (df['ds'].abs()<MIN_D)
     #if not selection.empty:
     l = len(df.loc[selection])
+    if l>0:
+        print('targets reached', l)
     df.loc[selection,'x_trg'] = rnd_vec(l,MAX_X)
     df.loc[selection, 'y_trg'] = rnd_vec(l,MAX_Y)
 

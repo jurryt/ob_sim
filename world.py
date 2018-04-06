@@ -44,6 +44,31 @@ def fn_cost(df, method='nearest'):
                   #fill_value=0)
     
     return xi, yi, zi
+
+def cost_function(df, selection, machine_id, method='nearest'):
+    for ix, row in df.loc[selection].iterrows():
+        #fr=df[df.index!=ix]
+        df.loc[ix,'cost'] = 1#-sum((1/dist(row.x,row.y,fr.x,fr.y)))
+
+#    df.loc[machine_id,'cost'] = 
+
+    xi=np.linspace(0,MAX_X)
+    yi=np.linspace(0,MAX_Y)
+    
+    
+    fr= df.loc[selection]
+    reward = np.zeros(len(fr))
+    
+    reward[machine_id]=-1.0
+    
+    zi = griddata((np.array([*fr.x.values, *fr.x_trg.values]), np.array([*fr.y.values, *fr.y_trg.values])), 
+                  np.array([*fr.cost.values, *reward]),
+                  (xi[None,:],yi[:,None]), 
+                  method=method)#,
+                  #fill_value=0)
+    
+    return xi, yi, zi
+    
     
 # setup database
 client = MongoClient()
@@ -65,39 +90,56 @@ df['blender_name'] = ''
 df['blender_type'] = 'object'
 df.loc[0,'blender_name'] = 'car.001'
 
-df.loc[:N/2,'machine_type'] = 'simplebot'
+#df.loc[:N/2,'machine_type'] = 'simplebot'
+df['machine_type'] = 'simplebot'
 df['radius'] = 0.0
 df['collision'] = False
+df['cost'] = 0.0
+#df['u']=0.0
+#df['v']=0.0
     
 db_update_df(db, df)
 
-xi, yi, zi=fn_cost(df, method=INTERPOLATION)
-db_update_grid(db, 'world', xi, yi, zi)
+#xi, yi, zi=fn_cost(df, method=INTERPOLATION)
+#xi, yi, zi=cost_function(df, 0, method=INTERPOLATION)
+#db_update_grid(db, 'world', xi, yi, zi)
 
 while True:
     
     # read machines information 
+    # get rid of nans
     df = db_read_df(db)
+    
+    
     
     # velocity has been set by machines
     if 'u' in df.columns and 'v' in df.columns:
         
-        df['x_new'] = df['x'] + df['u']
-        df['y_new'] = df['y'] + df['v']
+        selection = ~df.u.isna() & ~df.v.isna()
+        
+        df.loc[selection, 'x_new'] = df.loc[selection, 'x'] + df.loc[selection, 'u']
+        df.loc[selection, 'y_new'] = df.loc[selection, 'y'] + df.loc[selection, 'v']
         
         for ix, row in df.iterrows():
             fr=df[df.index!=ix]
             df.loc[ix,'collision'] = any(dist(row.x_new,row.y_new,fr.x_new,fr.y_new)<=(fr.radius+row.radius))
         
+        collisions = len(df[df.collision])
+        if collisions>0:
+            print('collisions', collisions)
+        
         df.loc[~df.collision,'x'] = df.loc[~df.collision,'x_new']
         df.loc[~df.collision,'y'] = df.loc[~df.collision,'y_new']
         
-        db_update_df(db, df)
-
-    xi, yi, zi=fn_cost(df, method=INTERPOLATION)
+        db_update_df(db, df.loc[selection])
     
-    db_update_grid(db, 'world', xi, yi, zi)
+    #xi, yi, zi=fn_cost(df, method=INTERPOLATION)
+        # only if we have a target
+        xi, yi, zi=cost_function(df,selection, 0, method=INTERPOLATION)
     
+        db_update_grid(db, 'world', xi, yi, zi)
+        sock_send_grid(sock, 'world', xi, yi, zi)
+        
     sock_send_df(sock, df)
-    sock_send_grid(sock, 'world', xi, yi, zi)
+        
     
