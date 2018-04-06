@@ -103,78 +103,91 @@ def cost_function(df, selection, machine_id, method='nearest'):
 #async def send_data(websocket, path):
 #def main():
 # setup database
-client = MongoClient()
-db = client.world    
 
-#    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#    sock.connect((HOST, PORT))
+def world_gen()    :
 
-print(BEHAVIOUR)
-
-#%%
-db_clear(db)
-df = pd.DataFrame(index=range(N), 
-                  data={'x': rnd_vec(N,MAX_X),
-                        'y': rnd_vec(N,MAX_Y)})
+    client = MongoClient()
+    db = client.world    
     
-# blender specific columns
-df['blender_name'] = ''
-df['blender_type'] = 'object'
-df.loc[0,'blender_name'] = 'car.001'
-
-#df.loc[:N/2,'machine_type'] = 'simplebot'
-df['machine_type'] = 'simplebot'
-df['radius'] = 0.5
-df['collision'] = False
-df['cost'] = 0.0
-#df['u']=0.0
-#df['v']=0.0
-
-df['x_trg'] = rnd_vec(N,MAX_X)
-df['y_trg'] = rnd_vec(N,MAX_Y)
+    #    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #    sock.connect((HOST, PORT))
     
-db_update_df(db, df)
-
-#xi, yi, zi=fn_cost(df, method=INTERPOLATION)
-#xi, yi, zi=cost_function(df, 0, method=INTERPOLATION)
-#db_update_grid(db, 'world', xi, yi, zi)
-
-while True:
+    print(BEHAVIOUR)
     
-    # read machines information 
-    # get rid of nans
-    df = db_read_df(db)
+    #%%
+    db_clear(db)
+    df = pd.DataFrame(index=range(N), 
+                      data={'x': rnd_vec(N,MAX_X),
+                            'y': rnd_vec(N,MAX_Y)})
+        
+    # blender specific columns
+    df['blender_name'] = ''
+    df['blender_type'] = 'object'
+    df.loc[0,'blender_name'] = 'car.001'
     
-    for machine_module in machine_modules:
-        machine_module.set_df(df)
+    #df.loc[:N/2,'machine_type'] = 'simplebot'
+    df['machine_type'] = 'simplebot'
+    df['radius'] = 0.5
+    df['collision'] = False
+    df['cost'] = 0.0
+    #df['u']=0.0
+    #df['v']=0.0
     
-    
-    # velocity has been set by machines
-    if 'u' in df.columns and 'v' in df.columns:
+    df['x_trg'] = rnd_vec(N,MAX_X)
+    df['y_trg'] = rnd_vec(N,MAX_Y)
         
-        selection = ~df.u.isna() & ~df.v.isna()
-        
-        df.loc[selection, 'x_new'] = df.loc[selection, 'x'] + df.loc[selection, 'u']
-        df.loc[selection, 'y_new'] = df.loc[selection, 'y'] + df.loc[selection, 'v']
-        
-        for ix, row in df.iterrows():
-            fr=df[df.index!=ix]
-            df.loc[ix,'collision'] = any(dist(row.x_new,row.y_new,fr.x_new,fr.y_new)<=(fr.radius+row.radius))
-        
-        collisions = len(df[df.collision])
-        if collisions>0:
-            print('collisions', collisions)
-        
-        df.loc[~df.collision,'x'] = df.loc[~df.collision,'x_new']
-        df.loc[~df.collision,'y'] = df.loc[~df.collision,'y_new']
-        
-        db_update_df(db, df.loc[selection])
+    db_update_df(db, df)
     
     #xi, yi, zi=fn_cost(df, method=INTERPOLATION)
-        # only if we have a target
-        xi, yi, zi=cost_function(df,selection, 0, method=INTERPOLATION)
+    #xi, yi, zi=cost_function(df, 0, method=INTERPOLATION)
+    #db_update_grid(db, 'world', xi, yi, zi)
     
-        db_update_grid(db, 'world', xi, yi, zi)
+    while True:
+        
+        # read machines information 
+        # get rid of nans
+        df = db_read_df(db)
+        
+        for machine_module in machine_modules:
+            machine_module.set_df(df)
+        
+        
+        # velocity has been set by machines
+        if 'u' in df.columns and 'v' in df.columns:
+            
+            selection = ~df.u.isna() & ~df.v.isna()
+            
+            df.loc[selection, 'x_new'] = df.loc[selection, 'x'] + df.loc[selection, 'u']
+            df.loc[selection, 'y_new'] = df.loc[selection, 'y'] + df.loc[selection, 'v']
+            
+            for ix, row in df.iterrows():
+                fr=df[df.index!=ix]
+                df.loc[ix,'collision'] = any(dist(row.x_new,row.y_new,fr.x_new,fr.y_new)<=(fr.radius+row.radius))
+            
+            collisions = len(df[df.collision])
+            if collisions>0:
+                print('collisions', collisions)
+            
+            df.loc[~df.collision,'x'] = df.loc[~df.collision,'x_new']
+            df.loc[~df.collision,'y'] = df.loc[~df.collision,'y_new']
+            
+            db_update_df(db, df.loc[selection])
+        
+        #xi, yi, zi=fn_cost(df, method=INTERPOLATION)
+            # only if we have a target
+            xi, yi, zi=cost_function(df,selection, 0, method=INTERPOLATION)
+        
+            db_update_grid(db, 'world', xi, yi, zi)
+        
+            grid = {'world':{'x':xi,'y':yi,'z':zi}}
+        
+        yield df, grid
+
+if __name__ == '__main__':
+    for df, grid in world_gen():
+        pass
+
+    
 #            sock_send_grid(sock, 'world', xi, yi, zi)
         
 #        sock_send_df(sock, df)
