@@ -13,13 +13,17 @@ def db_clear(db):
     machines.remove()
     grids = db.grids
     grids.remove()
+    settings = db.settings
+    settings.remove()
+    metrics = db.metrics
+    metrics.remove()
 
-def db_replace_df(db, df):
-    machines = db.machines
-    for ix, row in df.iterrows():
-        machines.replace_one({'_id': int(ix)},
-                                   row.to_dict(),
-                                   upsert=True)
+#def db_replace_df(db, df):
+#    machines = db.machines
+#    for ix, row in df.iterrows():
+#        machines.replace_one({'_id': int(ix)},
+#                                   row.to_dict(),
+#                                   upsert=True)
 
 
 def db_update_df(db, df):

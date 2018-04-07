@@ -13,15 +13,8 @@ TODO:
     6.....
 
 """
-import numpy as np
-import pandas as pd 
 
-from scipy.interpolate import griddata
-
-from pymongo import MongoClient
-from database import db_read_df, db_update_df, db_clear, db_update_grid,db_read_grid
-from settings import N, MAX_X, MAX_Y, BEHAVIOUR, INTERPOLATION, HOST, PORT
-from utils import rnd_vec, dist
+from settings import HOST, PORT
 import socket
 
 from socket_functions import sock_send_df, sock_send_grid
@@ -29,7 +22,6 @@ from socket_functions import sock_send_df, sock_send_grid
 
 import asyncio
 #import datetime
-import random
 import websockets
 #import json
 

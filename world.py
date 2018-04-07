@@ -19,8 +19,8 @@ import pandas as pd
 from scipy.interpolate import griddata
 
 from pymongo import MongoClient
-from database import db_read_df, db_update_df, db_clear, db_update_grid,db_read_grid
-from settings import N, MAX_X, MAX_Y, BEHAVIOUR, INTERPOLATION, HOST, PORT
+from database import db_read_df, db_update_df, db_clear, db_update_grid
+from settings import N, MAX_X, MAX_Y, BEHAVIOUR, INTERPOLATION
 from utils import rnd_vec, dist
 #import socket
 
@@ -30,58 +30,11 @@ from utils import rnd_vec, dist
 from bigchaindb_driver.crypto import generate_keypair
 #alex end
 
-
-import asyncio
-#import datetime
-import random
-import websockets
-#import json
 from machine_types import simplebot
 machine_modules = (simplebot,)
 
 
-#def fn_cost(df, method='nearest'):
-#    # http://scipy-cookbook.readthedocs.io/items/Matplotlib_Gridding_irregularly_spaced_data.html
-##    x,y = 
-#    
-#    for ix, row in df.iterrows():
-#        fr=df[df.index!=ix]
-#        df.loc[ix,'cost'] = -sum((1/dist(row.x,row.y,fr.x,fr.y)))
-#
-#    xi=np.linspace(0,MAX_X)
-#    yi=np.linspace(0,MAX_Y)
-#    
-#    zi = griddata((df.x.values, df.y.values), 
-#                  df.cost.values, 
-#                  (xi[None,:],yi[:,None]), 
-#                  method=method,
-#                  fill_value=0.0)
-#    
-#    return xi, yi, zi
-
 def cost_function(df, selection, machine_id, method='nearest'):
-    
-#        df.loc[s,'x_near'] = df.loc[s,'x_trg']
-#        df.loc[s,'y_near'] = df.loc[s,'y_trg']
-    
-        
-#    for ix, row in fr.iterrows():
-        #print(i,r)
-        
-#        df.loc[selection,'neighbour'] = dist(row.x,row.y,fr[fr.index!=ix].x,fr[fr.index!=ix].y).idxmin()
-        # if I am not the nearest set nearest as target
-#        if ix!=neighbour_ix:
-#            df.loc[ix,'x_near'] = df.loc[neighbour_ix,'x']
-#            df.loc[ix,'y_near'] = df.loc[neighbour_ix,'y']
-        
-        #col_x_trg, col_y_trg = 'x_near', 'y_near'
-
-    
-    
-    # do only one point
-    #for ix, row in df.loc[selection].iterrows():
-        #fr=df[df.index!=ix]
-   #     df.loc[ix,'cost'] = 1#-sum((1/dist(row.x,row.y,fr.x,fr.y)))
 
     if 'ix_near' in df.columns:
 
@@ -158,9 +111,6 @@ def world_gen()    :
         
     db_update_df(db, df)
     
-    #xi, yi, zi=fn_cost(df, method=INTERPOLATION)
-    #xi, yi, zi=cost_function(df, 0, method=INTERPOLATION)
-    #db_update_grid(db, 'world', xi, yi, zi)
     
     while True:
         
@@ -208,14 +158,3 @@ if __name__ == '__main__':
         pass
 
     
-#            sock_send_grid(sock, 'world', xi, yi, zi)
-        
-#        sock_send_df(sock, df)
-    #await websocket.send(df.to_json(orient='records'))
-    #await asyncio.sleep(random.random() * 3)
-
-#main()
-#start_server = websockets.serve(send_data, '0.0.0.0', 5678)
-
-#asyncio.get_event_loop().run_until_complete(start_server)
-#asyncio.get_event_loop().run_forever()
