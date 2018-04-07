@@ -5,10 +5,13 @@ Created on Mon Apr  2 20:19:39 2018
 
 @author: jur
 """
-from settings import tokens,master_keys
+#from settings import tokens,master_keys
 from utils import dist, rnd_vec, update_metrics
 # alex - needs to be in bigchaindb
-from bigchaindb_driver import BigchainDB
+from bigchainactions import createAsset, transferAsset
+from settings import master_receiver_private_key, master_receiver_public_key 
+from settings import master_sender_private_key,master_sender_public_key
+
 from time import sleep
 import urllib3
 
@@ -94,61 +97,21 @@ def set_df(df, settings, metrics, db):
     update_metrics(db, metrics, 'pickups', machine_type, len(df[selection & (df['state']=='empty')]))
     update_metrics(db, metrics, 'dropoffs', machine_type, len(df[selection & (df['state']=='carry')]))
     
-    
-    if USE_BIGCHAINDB:
-    
-        for ix, row in df.loc[selection].iterrows(): # for each bot that reached a new waypoint change its behaviour
-            if df.loc[ix,'state'] == 'empty':
-                print('empty bot changed to carry')
-                df.loc[ix,'state'] = 'carry'
-                #create 
-                bdb = BigchainDB('https://test.bigchaindb.com', headers=tokens)
-                parcel_asset = {
-                    'data': {
-                        'parcel': {
-                            'serial_number': '9999',
-                            'manufacturer': 'producer'
-                        },
-                    },
-                }
-    
-                parcel_asset_metadata = {
-                    'parceltype': 'box'
-                }            
-                tx1 = bdb.transactions.prepare(
-                operation='CREATE',
-                    signers=master_keys.public_key,
-                    recipients=master_keys.public_key,
-                    asset=parcel_asset,
-                    metadata=parcel_asset_metadata
-                )
-                print('Transaction 1', tx1)
-                tx_signed1 = bdb.transactions.fulfill(
-                    tx1,
-                    private_keys=master_keys.private_key
-                )
-                try:
-                    sent_creation_tx = bdb.transactions.send(tx_signed1)
-                except:
-                    break
-                txid = tx_signed1['id']
-                trials = 0
-                while trials < 10:
-                    try:
-                        if bdb.transactions.status(txid).get('status') == 'valid':
-                            print('Tx Create valid in:', trials, 'secs')
-                            break
-                    except:
-                        trials += 1
-                        sleep(1)
-                if trials == 10:
-                    print('Tx is still being processed... Bye!')
-                    settings['USE_BIGCHAINDB'] = False
-                    
-                    break                                
-            if df.loc[ix,'state'] == 'carry':
-                print('carry bot changed to empty')
-                df.loc[ix,'state'] = 'empty'
-# alex end                
-        
-        
+    for ix, row in df.loc[selection].iterrows(): # for each bot that reached a new waypoint change its behaviour
+        if df.loc[ix,'state'] == 'empty':
+            print('empty bot changed to carry')
+            # alex adjusted
+            currentBot = df.loc[ix]                                
+            if USE_BIGCHAINDB:
+                createAsset(master_sender_private_key,master_sender_public_key) # mockup sender initialization, creation of paackage to take for bot
+                transferAsset(master_sender_public_key,master_sender_private_key,currentBot.public_key,currentBot.private_key) # transfer parcel from master_sender to current robot
+            df.loc[ix,'state'] = 'carry'
+        if df.loc[ix,'state'] == 'carry':
+            print('carry bot changed to empty')
+            # alex adjusted
+            currentBot = df.loc[ix]                
+            if USE_BIGCHAINDB:
+                transferAsset(currentBot.public_key,currentBot.private_key, master_receiver_public_key,master_receiver_private_key) # transfer parcel from current robot to master receiver
+            df.loc[ix,'state'] = 'empty'
+                
+# alex end       

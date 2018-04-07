@@ -6,7 +6,7 @@ Created on Sat Apr  7 11:12:20 2018
 @author: morten
 """
 
-from settings import tokens,master_keys
+from settings import tokens#,master_keys
 from utils import dist, rnd_vec, update_metrics
 from time import sleep
 

@@ -161,7 +161,16 @@ def world_gen(database_name='world')    :
         # get rid of nans
         df = db_read_df(db)
         settings = db_read_dict(db, 'settings')
-        
+        tokens = {}
+#alex
+#tokens['app_id'] = '4a33bc96'
+#tokens['app_key'] = '5e9699fbe0c5bca83d35e3a7e63ba1c1'
+#jur
+#tokens['app_id'] = 'dbd40a9c'
+#tokens['app_key'] = 'a8062ad9546eba03f4f61ad7f6d4afac'
+#from bigchaindb_driver.crypto import generate_keypair
+#master_keys = generate_keypair()
+
         for machine_module in machine_modules:
             machine_module.set_df(df, settings, metrics, db)
         

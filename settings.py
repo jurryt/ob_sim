@@ -14,7 +14,7 @@ SETTINGS ={
     'INTERPOLATION' : 'linear', #'cubic'#'linear' or 'nearest'  
     'R' :100,#200#00 # nr of runs
 
-    'USE_BIGCHAINDB' : True,
+    'USE_BIGCHAINDB' : False,
 
 #BEHAVIOUR = 'nearest_target'
 #BEHAVIOUR = 'solo'
@@ -28,7 +28,16 @@ SETTINGS ={
 
         }
 
-#INTERPOLATION = 'nearest'
+#INTERPOLATION = 'nearest'tokens = {}
+#alex
+#tokens['app_id'] = '4a33bc96'
+#tokens['app_key'] = '5e9699fbe0c5bca83d35e3a7e63ba1c1'
+#jur
+#tokens['app_id'] = 'dbd40a9c'
+#tokens['app_key'] = 'a8062ad9546eba03f4f61ad7f6d4afac'
+#from bigchaindb_driver.crypto import generate_keypair
+#master_keys = generate_keypair()
+
 
 HOST = 'localhost'
 #HOST = '10.1.2.15'
@@ -49,6 +58,11 @@ tokens = {}
 tokens['app_id'] = 'dbd40a9c'
 tokens['app_key'] = 'a8062ad9546eba03f4f61ad7f6d4afac'
 from bigchaindb_driver.crypto import generate_keypair
-master_keys = generate_keypair()
+
+master_receiver_private_key='CiU56eNwScL7S89gAUUh1xfiub4nhiopF6sVa85HTvK7'
+master_receiver_public_key='kRkyL8X2AavMvcPB2NGPGFr1S8BvYeTZfQ8kTeZM1X4'
+
+master_sender_private_key = 'tSc2YBW4gYUzXWeoUB8QmB3D5BpezGrTCvaUCCowAUx'
+master_sender_public_key = 'CXBUJeknCHxVe59vgojq4TKz341VyLokkNwVVH5ceQkX'
 
 # alex end
