@@ -14,7 +14,7 @@ SETTINGS ={
     'INTERPOLATION' : 'linear', #'cubic'#'linear' or 'nearest'  
     'R' :100,#200#00 # nr of runs
 
-    'USE_BIGCHAINDB' : True,
+    'USE_BIGCHAINDB' : False,
 
 #BEHAVIOUR = 'nearest_target'
 #BEHAVIOUR = 'solo'

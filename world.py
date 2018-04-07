@@ -31,8 +31,8 @@ from utils import rnd_vec, dist
 from bigchaindb_driver.crypto import generate_keypair
 #alex end
 
-from machine_types import simplebot
-machine_modules = (simplebot,)
+from machine_types import simplebot, roguebot
+machine_modules = (simplebot, roguebot)
 
 
 def cost_function(df, selection, machine_id, settings):
@@ -115,6 +115,11 @@ def world_gen(database_name='world')    :
     df = pd.DataFrame(index=range(N), 
                       data={'x': rnd_vec(N,MAX_X),
                             'y': rnd_vec(N,MAX_Y)})
+    
+    
+    #MORTEN  BEGIN  
+    df.loc[N-1,'machine_type'] = 'roguebot' #overwriting 1 so one rogue node availlable
+#MORTEN END
     
     # alex      
     df['private_key'] = 'empty' # bigchaindb private key for each unique robot
