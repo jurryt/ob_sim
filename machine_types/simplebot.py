@@ -6,10 +6,12 @@ Created on Mon Apr  2 20:19:39 2018
 @author: jur
 """
 from settings import tokens,master_keys
-from utils import dist, rnd_vec
+from utils import dist, rnd_vec, update_metrics
 # alex - needs to be in bigchaindb
 from bigchaindb_driver import BigchainDB
 from time import sleep
+
+
 # alex end 
 
 #class SimpleBot:
@@ -17,7 +19,7 @@ from time import sleep
 #    def __init__(self, radius=5.0):
 #        self.radius = radius
         
-def set_df(df, settings):
+def set_df(df, settings, metrics, db):
     machine_type = __name__.split('.')[-1]
     S, MIN_D, MAX_X, MAX_Y = (settings[k] for k in ('S', 'MIN_D', 'MAX_X', 'MAX_Y'))
     s = (df['machine_type']==machine_type)
@@ -70,6 +72,7 @@ def set_df(df, settings):
     v = -df.loc[selection, 'u']
     df.loc[selection, 'u'] = u
     df.loc[selection, 'v'] = v
+    update_metrics(db, metrics, 'collisions', machine_type, len(df.loc[selection]))
 
     # determine if target is reached and set new target
     # new target should come from blockchain
@@ -83,7 +86,11 @@ def set_df(df, settings):
 
 # alex
 # this code uses simple binary state change to describe whether the robot is carrying
-# an asset (for example energy or a parcel or whatever)    
+# an asset (for example energy or a parcel or whatever) 
+    update_metrics(db, metrics, 'pickups', machine_type, len(df[selection & (df['state']=='empty')]))
+    update_metrics(db, metrics, 'dropoffs', machine_type, len(df[selection & (df['state']=='carry')]))
+    
+    
     for ix, row in df.loc[selection].iterrows(): # for each bot that reached a new waypoint change its behaviour
         if df.loc[ix,'state'] == 'empty':
             print('empty bot changed to carry')

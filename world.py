@@ -13,13 +13,14 @@ TODO:
     6.....
 
 """
+import time
 import numpy as np
 import pandas as pd 
 
 from scipy.interpolate import griddata
 
 from pymongo import MongoClient
-from database import db_read_df, db_update_df, db_clear, db_update_grid, db_update_dict, db_read_dict
+from database import db_read_df, db_update_df, db_clear, db_update_grid, db_update_dict, db_read_dict, db_insert_metrics
 from settings import SETTINGS
 from utils import rnd_vec, dist
 #import socket
@@ -67,12 +68,21 @@ def cost_function(df, selection, machine_id, settings):
 #def main():
 # setup database
 
+
+
 def world_gen()    :
 
     client = MongoClient()
     db = client.world    
     db_clear(db)
     
+    t=time.clock()
+    metrics={
+        'collisions':{'simplebot':[(t,0)]},
+        'pickups':{'simplebot':[(t,0)]},
+        'dropoffs':{'simplebot':[(t,0)]},
+        }
+
     #    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     #    sock.connect((HOST, PORT))
     
@@ -84,6 +94,18 @@ def world_gen()    :
     MAX_Y = SETTINGS['MAX_Y']
     
     db_update_dict(db, 'settings', SETTINGS)
+    
+    
+    # metrics
+#    t = time.clock()
+#    metrics = {'collisions':[(t,0)],
+   #                          'pickups':[(t,0)],
+    #                         'dropoffs':[(t,0)]}
+#    db_update_dict(db, 'metrics', metrics)
+#    update_metrics(db, 'collisions',0)   
+#    db_insert_metrics(db, 'pickups',0)   
+#    db_insert_metrics(db, 'dropoffs',0)   
+       
     
     #%%
     
@@ -131,7 +153,7 @@ def world_gen()    :
         settings = db_read_dict(db, 'settings')
         
         for machine_module in machine_modules:
-            machine_module.set_df(df, settings)
+            machine_module.set_df(df, settings, metrics, db)
         
         
         # velocity has been set by machines

@@ -5,6 +5,7 @@ Created on Sat Mar 31 06:59:03 2018
 
 @author: jur
 """
+import time
 import pandas as pd
 import numpy as np
 
@@ -15,6 +16,8 @@ def db_clear(db):
     grids.remove()
     dicts = db.dicts
     dicts.remove()
+    metrics = db.metrics
+    metrics.remove()
 #    metrics = db.metrics
 #    metrics.remove()
 
@@ -24,6 +27,17 @@ def db_clear(db):
 #        machines.replace_one({'_id': int(ix)},
 #                                   row.to_dict(),
 #                                   upsert=True)
+
+def db_insert_metrics(db, metric, machine_type, value):
+    metrics = db.metrics
+    metrics.insert_one({metric:{machine_type:(time.clock(),value)}})
+
+def db_read_metrics(db):
+    result=[]
+    for metric in db.metrics.find():
+        result.append(metric)
+        
+    return result
 
 #def db_update_dict(db, key, d):
 def db_update_dict(db, dict_name, dictionary):
