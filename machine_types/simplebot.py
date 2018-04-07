@@ -106,7 +106,7 @@ def set_df(df, settings, metrics, db):
                 createAsset(master_sender_private_key,master_sender_public_key) # mockup sender initialization, creation of paackage to take for bot
                 transferAsset(master_sender_public_key,master_sender_private_key,currentBot.public_key,currentBot.private_key) # transfer parcel from master_sender to current robot
             df.loc[ix,'state'] = 'carry'
-        if df.loc[ix,'state'] == 'carry':
+        elif df.loc[ix,'state'] == 'carry':
             print('carry bot changed to empty')
             # alex adjusted
             currentBot = df.loc[ix]                
