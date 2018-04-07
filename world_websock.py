@@ -109,6 +109,7 @@ class MyServerProtocol(WebSocketServerProtocol):
             #Text message received: {"simplebot":{"speed":"2.0","reward":"1.0","penalty":"1.0"}}
             d = json.loads(payload)
             d['simplebot'] = {k:float(v) for k,v in d['simplebot'].items()}
+            d['roguebot'] = {k:float(v) for k,v in d['simplebot'].items()}
             settings = {'machines' : d}
 #            print(settings)
             db_update_dict(self.db, 'settings', settings)
