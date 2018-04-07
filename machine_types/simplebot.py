@@ -21,7 +21,8 @@ from time import sleep
         
 def set_df(df, settings, metrics, db):
     machine_type = __name__.split('.')[-1]
-    S, MIN_D, MAX_X, MAX_Y = (settings[k] for k in ('S', 'MIN_D', 'MAX_X', 'MAX_Y'))
+    S, MIN_D, MAX_X, MAX_Y, USE_BIGCHAINDB = (settings[k] for k in 
+                                              ('S', 'MIN_D', 'MAX_X', 'MAX_Y', 'USE_BIGCHAINDB'))
     s = (df['machine_type']==machine_type)
     
     speed, reward, penalty = (settings['machines'][machine_type][k] for k in ('speed', 'reward', 'penalty'))
@@ -91,53 +92,57 @@ def set_df(df, settings, metrics, db):
     update_metrics(db, metrics, 'dropoffs', machine_type, len(df[selection & (df['state']=='carry')]))
     
     
-    for ix, row in df.loc[selection].iterrows(): # for each bot that reached a new waypoint change its behaviour
-        if df.loc[ix,'state'] == 'empty':
-            print('empty bot changed to carry')
-            df.loc[ix,'state'] = 'carry'
-            #create 
-            bdb = BigchainDB('https://test.bigchaindb.com', headers=tokens)
-            parcel_asset = {
-                'data': {
-                    'parcel': {
-                        'serial_number': '9999',
-                        'manufacturer': 'producer'
+    if USE_BIGCHAINDB:
+    
+        for ix, row in df.loc[selection].iterrows(): # for each bot that reached a new waypoint change its behaviour
+            if df.loc[ix,'state'] == 'empty':
+                print('empty bot changed to carry')
+                df.loc[ix,'state'] = 'carry'
+                #create 
+                bdb = BigchainDB('https://test.bigchaindb.com', headers=tokens)
+                parcel_asset = {
+                    'data': {
+                        'parcel': {
+                            'serial_number': '9999',
+                            'manufacturer': 'producer'
+                        },
                     },
-                },
-            }
-
-            parcel_asset_metadata = {
-                'parceltype': 'box'
-            }            
-            tx1 = bdb.transactions.prepare(
-            operation='CREATE',
-                signers=master_keys.public_key,
-                recipients=master_keys.public_key,
-                asset=parcel_asset,
-                metadata=parcel_asset_metadata
-            )
-            print('Transaction 1', tx1)
-            tx_signed1 = bdb.transactions.fulfill(
-                tx1,
-                private_keys=master_keys.private_key
-            )
-            sent_creation_tx = bdb.transactions.send(tx_signed1)
-            txid = tx_signed1['id']
-            trials = 0
-            while trials < 60:
-                try:
-                    if bdb.transactions.status(txid).get('status') == 'valid':
-                        print('Tx Create valid in:', trials, 'secs')
-                        break
-                except:
-                    trials += 1
-                    sleep(1)
-            if trials == 60:
-                print('Tx is still being processed... Bye!')
-                exit(0)                                    
-        if df.loc[ix,'state'] == 'carry':
-            print('carry bot changed to empty')
-            df.loc[ix,'state'] = 'empty'
+                }
+    
+                parcel_asset_metadata = {
+                    'parceltype': 'box'
+                }            
+                tx1 = bdb.transactions.prepare(
+                operation='CREATE',
+                    signers=master_keys.public_key,
+                    recipients=master_keys.public_key,
+                    asset=parcel_asset,
+                    metadata=parcel_asset_metadata
+                )
+                print('Transaction 1', tx1)
+                tx_signed1 = bdb.transactions.fulfill(
+                    tx1,
+                    private_keys=master_keys.private_key
+                )
+                #sent_creation_tx = bdb.transactions.send(tx_signed1)
+                txid = tx_signed1['id']
+                trials = 0
+                while trials < 10:
+                    try:
+                        if bdb.transactions.status(txid).get('status') == 'valid':
+                            print('Tx Create valid in:', trials, 'secs')
+                            break
+                    except:
+                        trials += 1
+                        sleep(1)
+                if trials == 10:
+                    print('Tx is still being processed... Bye!')
+                    settings['USE_BIGCHAINDB'] = False
+                    
+                    break                                
+            if df.loc[ix,'state'] == 'carry':
+                print('carry bot changed to empty')
+                df.loc[ix,'state'] = 'empty'
 # alex end                
         
         
