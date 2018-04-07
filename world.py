@@ -81,9 +81,9 @@ def world_gen(database_name='world')    :
     
     t=time.clock()
     metrics={
-        'collisions':{'simplebot':[(t,0)]},
-        'pickups':{'simplebot':[(t,0)]},
-        'dropoffs':{'simplebot':[(t,0)]},
+        'collisions':{'simplebot':(t,0)},
+        'pickups':{'simplebot':(t,0)},
+        'dropoffs':{'simplebot':(t,0)},
         }
 
     #    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -135,7 +135,7 @@ def world_gen(database_name='world')    :
     
     #df.loc[:N/2,'machine_type'] = 'simplebot'
     df['machine_type'] = 'simplebot'
-    df['radius'] = 1.5
+    df['radius'] = 0.9
     df['collision'] = False
     df['cost'] = 0.0
     #df['u']=0.0

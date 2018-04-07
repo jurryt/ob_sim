@@ -28,8 +28,8 @@ def update_metrics(db, metrics, metric_name, machine_type, value):
         
 #        if metrics=={}:
             
-        last = metrics[metric_name][machine_type][-1][1]
-        metrics[metric_name][machine_type].append((t,last+value))
+        last = metrics[metric_name][machine_type][1]
+        metrics[metric_name][machine_type]=(t,last+value)
         db_insert_metrics(db, metric_name, machine_type, last+value)
     
 
