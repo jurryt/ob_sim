@@ -107,11 +107,11 @@ class MyServerProtocol(WebSocketServerProtocol):
             d = json.loads(payload)
             d['simplebot'] = {k:float(v) for k,v in d['simplebot'].items()}
             settings = {'machines' : d}
-            print(settings)
+#            print(settings)
             db_update_dict(self.db, 'settings', settings)
-            print('***')
-            print(db_read_dict(self.db, 'settings'))
-            print('***')	
+#            print('***')
+#            print(db_read_dict(self.db, 'settings'))
+#            print('***')	
         # echo back message verbatim
         #self.sendMessage(payload, isBinary)
 
