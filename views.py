@@ -44,6 +44,8 @@ ax3d = fig3d.add_subplot(111,projection='3d')
 xm,ym = np.meshgrid(xi,yi)
 ax3d.plot_wireframe(xm,ym,zi)
 
+ax3d.set_zlim3d(-2.0,2.0)
+
 def update(frame_number):
     global contour #, utility
     

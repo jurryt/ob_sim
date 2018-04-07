@@ -40,30 +40,30 @@ from machine_types import simplebot
 machine_modules = (simplebot,)
 
 
-def fn_cost(df, method='nearest'):
-    # http://scipy-cookbook.readthedocs.io/items/Matplotlib_Gridding_irregularly_spaced_data.html
-#    x,y = 
-    
-    for ix, row in df.iterrows():
-        fr=df[df.index!=ix]
-        df.loc[ix,'cost'] = -sum((1/dist(row.x,row.y,fr.x,fr.y)))
-
-    xi=np.linspace(0,MAX_X)
-    yi=np.linspace(0,MAX_Y)
-    
-    zi = griddata((df.x.values, df.y.values), 
-                  df.cost.values, 
-                  (xi[None,:],yi[:,None]), 
-                  method=method)#,
-                  #fill_value=0)
-    
-    return xi, yi, zi
+#def fn_cost(df, method='nearest'):
+#    # http://scipy-cookbook.readthedocs.io/items/Matplotlib_Gridding_irregularly_spaced_data.html
+##    x,y = 
+#    
+#    for ix, row in df.iterrows():
+#        fr=df[df.index!=ix]
+#        df.loc[ix,'cost'] = -sum((1/dist(row.x,row.y,fr.x,fr.y)))
+#
+#    xi=np.linspace(0,MAX_X)
+#    yi=np.linspace(0,MAX_Y)
+#    
+#    zi = griddata((df.x.values, df.y.values), 
+#                  df.cost.values, 
+#                  (xi[None,:],yi[:,None]), 
+#                  method=method,
+#                  fill_value=0.0)
+#    
+#    return xi, yi, zi
 
 def cost_function(df, selection, machine_id, method='nearest'):
     
 #        df.loc[s,'x_near'] = df.loc[s,'x_trg']
 #        df.loc[s,'y_near'] = df.loc[s,'y_trg']
-    fr= df.loc[selection]
+    
         
 #    for ix, row in fr.iterrows():
         #print(i,r)
@@ -83,26 +83,28 @@ def cost_function(df, selection, machine_id, method='nearest'):
         #fr=df[df.index!=ix]
    #     df.loc[ix,'cost'] = 1#-sum((1/dist(row.x,row.y,fr.x,fr.y)))
 
-    if 'neighbour_ix' in df.columns:
+    if 'ix_near' in df.columns:
 
-        neighbour_id = df.loc[machine_id,'neighbour_ix']
+        neighbour_id = df.loc[machine_id,'ix_near']
 
-        df.loc[neighbour_id,'cost'] = 1.0
+        df.loc[int(neighbour_id),'cost'] = 1.0
+
 
     xi=np.linspace(0,MAX_X)
     yi=np.linspace(0,MAX_Y)
     
     
-    
+    fr= df.loc[selection]
     reward = np.zeros(len(fr))
     
     reward[machine_id]=-1.0
     
+    
     zi = griddata((np.array([*fr.x.values, *fr.x_trg.values]), np.array([*fr.y.values, *fr.y_trg.values])), 
                   np.array([*fr.cost.values, *reward]),
                   (xi[None,:],yi[:,None]), 
-                  method=method)#,
-                  #fill_value=0)
+                  method=method,
+                  fill_value=0.0)
     
     return xi, yi, zi
     

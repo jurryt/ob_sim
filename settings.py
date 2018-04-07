@@ -19,7 +19,7 @@ R=100#200#00 # nr of runs
 BEHAVIOUR = 'gradient'
 
 MOVIE = False #False|True
-INTERPOLATION = 'cubic'#'linear' or 'nearest'
+INTERPOLATION = 'linear' #'cubic'#'linear' or 'nearest'
 #INTERPOLATION = 'nearest'
 
 #HOST = 'localhost'
