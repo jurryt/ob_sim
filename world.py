@@ -20,7 +20,7 @@ import pandas as pd
 from scipy.interpolate import griddata
 
 from pymongo import MongoClient
-from database import db_read_df, db_update_df, db_clear, db_update_grid, db_update_dict, db_read_dict, db_insert_metrics
+from database import db_read_df, db_update_df, db_clear, db_update_grid, db_update_dict, db_read_dict, db_insert_metrics, db_read_metrics
 from settings import SETTINGS
 from utils import rnd_vec, dist
 #import socket
@@ -135,7 +135,7 @@ def world_gen(database_name='world')    :
     
     #df.loc[:N/2,'machine_type'] = 'simplebot'
     df['machine_type'] = 'simplebot'
-    df['radius'] = 0.5
+    df['radius'] = 1.5
     df['collision'] = False
     df['cost'] = 0.0
     #df['u']=0.0
@@ -190,10 +190,12 @@ def world_gen(database_name='world')    :
         
             grid = {'world':{'x':xi,'y':yi,'z':zi}}
         
-        yield df, grid
+        #metrics = db_read_metrics(db)
+        
+        yield df, grid, metrics
 
 if __name__ == '__main__':
-    for df, grid in world_gen():
+    for df, grid, metrics in world_gen():
         pass
 
     

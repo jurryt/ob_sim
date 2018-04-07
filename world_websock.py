@@ -54,7 +54,7 @@ def send_data(websocket, path, use_socket=True):
     #]
     #loop.run_in_executor(executor, consumera_handler, websocket, path)    
 
-    for df, grid in world_gen(database_name='world'):
+    for df, grid, metrics in world_gen(database_name='world'):
         #sock_send_grid(sock, 'world', grid['world']['x'], grid['world']['y'], grid['world']['z'])
         # do this if you want blender connectivity
         if use_socket:
@@ -62,6 +62,7 @@ def send_data(websocket, path, use_socket=True):
             sock_send_df(sock, df)
 
         websocket.sendMessage(df.to_json(orient='records').encode('utf8'), False)
+        websocket.sendMessage(json.dumps(metrics).encode('utf8'), False)
         #await asyncio.sleep(random.random() * 3)
 
 

@@ -18,7 +18,8 @@ print('Before:')
 print(settings)
 
 # do something
-settings['machines']['simplebot']['speed']= 0.1
+#settings['machines']['simplebot']['speed']= 0.1
+settings['N']= 10
 
 db_update_dict(db, 'settings', settings)
 
