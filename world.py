@@ -26,6 +26,10 @@ from utils import rnd_vec, dist
 
 #from socket_functions import sock_send_df, sock_send_grid
 
+#alex
+from bigchaindb_driver.crypto import generate_keypair
+#alex end
+
 
 import asyncio
 #import datetime
@@ -119,6 +123,18 @@ def world_gen()    :
     df = pd.DataFrame(index=range(N), 
                       data={'x': rnd_vec(N,MAX_X),
                             'y': rnd_vec(N,MAX_Y)})
+    
+    # alex      
+    df['private_key'] = 'empty' # bigchaindb private key for each unique robot
+    df['public_key'] = 'empty' # bigchaindb public key for each unique robot
+    df['state'] = 'empty' # intial state of the robot. this state is later stored in metadata tag in blockchaindb 
+    for ix, row in df.iterrows():
+        current_keypair = generate_keypair()
+        private_key = current_keypair.private_key     
+        public_key = current_keypair.public_key     
+        df.loc[ix,'private_key'] = private_key
+        df.loc[ix,'public_key'] = public_key
+    # alex end
         
     # blender specific columns
     df['blender_name'] = ''

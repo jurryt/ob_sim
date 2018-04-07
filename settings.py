@@ -24,3 +24,22 @@ INTERPOLATION = 'cubic'#'linear' or 'nearest'
 
 HOST = 'localhost'
 PORT = 10000
+
+# alex
+# initialize object which all robots will use to communicate to the 
+# global DB. These setttings are derived from the test server so 
+# for each user registration this is different (set the app_id and app_key)
+# you need to register on boghchaindb and get this information under
+# "connect in python", which you can find on https://testnet.bigchaindb.com/
+
+tokens = {}
+#alex
+#tokens['app_id'] = '4a33bc96'
+#tokens['app_key'] = '5e9699fbe0c5bca83d35e3a7e63ba1c1'
+#jur
+tokens['app_id'] = 'dbd40a9c'
+tokens['app_key'] = 'a8062ad9546eba03f4f61ad7f6d4afac'
+from bigchaindb_driver.crypto import generate_keypair
+master_keys = generate_keypair()
+
+# alex end

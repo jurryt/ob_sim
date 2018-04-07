@@ -5,9 +5,12 @@ Created on Mon Apr  2 20:19:39 2018
 
 @author: jur
 """
-from settings import BEHAVIOUR, S, MIN_D, MAX_X, MAX_Y
+from settings import BEHAVIOUR, S, MIN_D, MAX_X, MAX_Y, tokens,master_keys
 from utils import dist, rnd_vec
-
+# alex - needs to be in bigchaindb
+from bigchaindb_driver import BigchainDB
+from time import sleep
+# alex end 
 
 #class SimpleBot:
     
@@ -52,8 +55,9 @@ def set_df(df):
     df.loc[selection,'u1'] = fr.ds.clip_upper(S) * fr['dx1']/fr['ds1']
     df.loc[selection,'v1'] = fr.ds.clip_upper(S) * fr['dy1']/fr['ds1']
 
-    df.loc[selection,'u'] += df.loc[selection,'u1']
-    df.loc[selection,'v'] += df.loc[selection,'v1']
+     # TODO: doesn't really work
+#    df.loc[selection,'u'] += df.loc[selection,'u1']
+#    df.loc[selection,'v'] += df.loc[selection,'v1']
     
     # on collision turn left
     selection = s & (df['collision'])
@@ -72,6 +76,56 @@ def set_df(df):
     df.loc[selection,'x_trg'] = rnd_vec(l,MAX_X)
     df.loc[selection, 'y_trg'] = rnd_vec(l,MAX_Y)
 
-        
+# alex
+# this code uses simple binary state change to describe whether the robot is carrying
+# an asset (for example energy or a parcel or whatever)    
+    for ix, row in df.loc[selection].iterrows(): # for each bot that reached a new waypoint change its behaviour
+        if df.loc[ix,'state'] == 'empty':
+            print('empty bot changed to carry')
+            df.loc[ix,'state'] = 'carry'
+            #create 
+            bdb = BigchainDB('https://test.bigchaindb.com', headers=tokens)
+            parcel_asset = {
+                'data': {
+                    'parcel': {
+                        'serial_number': '9999',
+                        'manufacturer': 'producer'
+                    },
+                },
+            }
+
+            parcel_asset_metadata = {
+                'parceltype': 'box'
+            }            
+            tx1 = bdb.transactions.prepare(
+            operation='CREATE',
+                signers=master_keys.public_key,
+                recipients=master_keys.public_key,
+                asset=parcel_asset,
+                metadata=parcel_asset_metadata
+            )
+            print('Transaction 1', tx1)
+            tx_signed1 = bdb.transactions.fulfill(
+                tx1,
+                private_keys=master_keys.private_key
+            )
+            sent_creation_tx = bdb.transactions.send(tx_signed1)
+            txid = tx_signed1['id']
+            trials = 0
+            while trials < 60:
+                try:
+                    if bdb.transactions.status(txid).get('status') == 'valid':
+                        print('Tx Create valid in:', trials, 'secs')
+                        break
+                except:
+                    trials += 1
+                    sleep(1)
+            if trials == 60:
+                print('Tx is still being processed... Bye!')
+                exit(0)                                    
+        if df.loc[ix,'state'] == 'carry':
+            print('carry bot changed to empty')
+            df.loc[ix,'state'] = 'empty'
+# alex end                
         
         
