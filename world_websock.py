@@ -42,6 +42,7 @@ async def send_data(websocket, path):
     
     for df, grid in world_gen():
         #sock_send_grid(sock, 'world', grid['world']['x'], grid['world']['y'], grid['world']['z'])
+        sock_send_grid(sock, df)
             
         sock_send_df(sock, df)
         await websocket.send(df.to_json(orient='records'))

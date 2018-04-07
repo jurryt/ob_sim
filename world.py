@@ -65,10 +65,10 @@ def cost_function(df, selection, machine_id, method='nearest'):
 #        df.loc[s,'y_near'] = df.loc[s,'y_trg']
     fr= df.loc[selection]
         
-    for ix, row in fr.iterrows():
+#    for ix, row in fr.iterrows():
         #print(i,r)
         
-        df.loc[selection,'neighbour'] = dist(row.x,row.y,fr[fr.index!=ix].x,fr[fr.index!=ix].y).idxmin()
+#        df.loc[selection,'neighbour'] = dist(row.x,row.y,fr[fr.index!=ix].x,fr[fr.index!=ix].y).idxmin()
         # if I am not the nearest set nearest as target
 #        if ix!=neighbour_ix:
 #            df.loc[ix,'x_near'] = df.loc[neighbour_ix,'x']
@@ -83,9 +83,11 @@ def cost_function(df, selection, machine_id, method='nearest'):
         #fr=df[df.index!=ix]
    #     df.loc[ix,'cost'] = 1#-sum((1/dist(row.x,row.y,fr.x,fr.y)))
 
-    neighbour_id = df.loc[machine_id,'neighbour']
+    if 'neighbour_ix' in df.columns:
 
-    df.loc[neighbour_id,'cost'] = 1
+        neighbour_id = df.loc[machine_id,'neighbour_ix']
+
+        df.loc[neighbour_id,'cost'] = 1.0
 
     xi=np.linspace(0,MAX_X)
     yi=np.linspace(0,MAX_Y)

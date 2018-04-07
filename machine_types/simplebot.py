@@ -29,6 +29,7 @@ def set_df(df):
         neighbour_ix = dist(row.x,row.y,df[df.index!=ix].x,df[df.index!=ix].y).idxmin()
         # if I am not the nearest set nearest as target
 #        if ix!=neighbour_ix:
+        df.loc[ix,'ix_near'] = neighbour_ix
         df.loc[ix,'x_near'] = df.loc[neighbour_ix,'x']
         df.loc[ix,'y_near'] = df.loc[neighbour_ix,'y']
    

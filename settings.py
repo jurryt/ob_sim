@@ -22,7 +22,8 @@ MOVIE = False #False|True
 INTERPOLATION = 'cubic'#'linear' or 'nearest'
 #INTERPOLATION = 'nearest'
 
-HOST = 'localhost'
+#HOST = 'localhost'
+HOST = '10.1.2.15'
 PORT = 10000
 
 # alex
