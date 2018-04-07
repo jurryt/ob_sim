@@ -124,7 +124,7 @@ def set_df(df, settings, metrics, db):
                     tx1,
                     private_keys=master_keys.private_key
                 )
-                #sent_creation_tx = bdb.transactions.send(tx_signed1)
+                sent_creation_tx = bdb.transactions.send(tx_signed1)
                 txid = tx_signed1['id']
                 trials = 0
                 while trials < 10:
