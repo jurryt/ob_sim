@@ -117,9 +117,6 @@ def world_gen(database_name='world')    :
                             'y': rnd_vec(N,MAX_Y)})
     
     
-    #MORTEN  BEGIN  
-    df.loc[N-1,'machine_type'] = 'roguebot' #overwriting 1 so one rogue node availlable
-#MORTEN END
     
     # alex      
     df['private_key'] = 'empty' # bigchaindb private key for each unique robot
@@ -140,6 +137,11 @@ def world_gen(database_name='world')    :
     
     #df.loc[:N/2,'machine_type'] = 'simplebot'
     df['machine_type'] = 'simplebot'
+    #MORTEN  BEGIN  
+    df.loc[N-1,'machine_type'] = 'roguebot' #overwriting 1 so one rogue node availlable
+    #MORTEN END
+
+
     df['radius'] = 0.9
     df['collision'] = False
     df['cost'] = 0.0

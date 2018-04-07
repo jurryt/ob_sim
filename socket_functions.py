@@ -19,8 +19,8 @@ def sock_send_df(sock, df):
             #sock.send(pickle.dumps(row.to_dict()))
             d = {
                   "mode": "change_scene",
-                   "car."+str(int(ix)+1).zfill(3): {
-                    "type": "car",
+                   row.machine_type+"."+str(int(ix)+1).zfill(3): {
+                    "type": row.machine_type,
                     "loc": {
                       "y": row.y,
                       "z": 0.0,

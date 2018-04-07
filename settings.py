@@ -22,7 +22,8 @@ SETTINGS ={
 
     'MOVIE' : False, #False|True
     
-    'machines':{'simplebot':{'speed':1.0,'reward':1.0,'penalty':1.0}}
+    'machines':{'simplebot':{'speed':1.0,'reward':1.0,'penalty':1.0},
+                'roguebot':{'speed':1.0,'reward':1.0,'penalty':1.0}}
     
 
         }
