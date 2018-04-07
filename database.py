@@ -13,10 +13,10 @@ def db_clear(db):
     machines.remove()
     grids = db.grids
     grids.remove()
-    settings = db.settings
-    settings.remove()
-    metrics = db.metrics
-    metrics.remove()
+    dicts = db.dicts
+    dicts.remove()
+#    metrics = db.metrics
+#    metrics.remove()
 
 #def db_replace_df(db, df):
 #    machines = db.machines
@@ -25,6 +25,24 @@ def db_clear(db):
 #                                   row.to_dict(),
 #                                   upsert=True)
 
+#def db_update_dict(db, key, d):
+def db_update_dict(db, dict_name, dictionary):
+    dicts = db.dicts
+    dicts.update_one({'_id':dict_name},
+                            {'$set':dictionary},
+                            upsert=True)
+ 
+#    for k,v in settings_dict.items():
+##        settings.update_one({'_id':k},
+#                            {'$set':v},
+#                            upsert=True)
+        
+def db_read_dict(db, dict_name):
+    dicts = db.dicts
+    return dicts.find_one({'_id':dict_name})
+#    dictionary = {}
+#    for setting in settings.find()
+#        settings_dict[setting['_id']]
 
 def db_update_df(db, df):
     machines = db.machines

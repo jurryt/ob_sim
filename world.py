@@ -19,8 +19,8 @@ import pandas as pd
 from scipy.interpolate import griddata
 
 from pymongo import MongoClient
-from database import db_read_df, db_update_df, db_clear, db_update_grid
-from settings import N, MAX_X, MAX_Y, BEHAVIOUR, INTERPOLATION
+from database import db_read_df, db_update_df, db_clear, db_update_grid, db_update_dict, db_read_dict
+from settings import SETTINGS
 from utils import rnd_vec, dist
 #import socket
 
@@ -34,7 +34,9 @@ from machine_types import simplebot
 machine_modules = (simplebot,)
 
 
-def cost_function(df, selection, machine_id, method='nearest'):
+def cost_function(df, selection, machine_id, settings):
+    MAX_X, MAX_Y= settings['MAX_X'], settings['MAX_Y']
+    method = settings['INTERPOLATION']
 
     if 'ix_near' in df.columns:
 
@@ -69,14 +71,22 @@ def world_gen()    :
 
     client = MongoClient()
     db = client.world    
+    db_clear(db)
     
     #    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     #    sock.connect((HOST, PORT))
     
-    print(BEHAVIOUR)
+
+    
+    # settings
+    N = SETTINGS['N']
+    MAX_X = SETTINGS['MAX_X']
+    MAX_Y = SETTINGS['MAX_Y']
+    
+    db_update_dict(db, 'settings', SETTINGS)
     
     #%%
-    db_clear(db)
+    
     df = pd.DataFrame(index=range(N), 
                       data={'x': rnd_vec(N,MAX_X),
                             'y': rnd_vec(N,MAX_Y)})
@@ -112,14 +122,16 @@ def world_gen()    :
     db_update_df(db, df)
     
     
+    
     while True:
         
         # read machines information 
         # get rid of nans
         df = db_read_df(db)
+        settings = db_read_dict(db, 'settings')
         
         for machine_module in machine_modules:
-            machine_module.set_df(df)
+            machine_module.set_df(df, settings)
         
         
         # velocity has been set by machines
@@ -145,7 +157,7 @@ def world_gen()    :
         
         #xi, yi, zi=fn_cost(df, method=INTERPOLATION)
             # only if we have a target
-            xi, yi, zi=cost_function(df,selection, 0, method=INTERPOLATION)
+            xi, yi, zi=cost_function(df,selection, 0, settings)
         
             db_update_grid(db, 'world', xi, yi, zi)
         

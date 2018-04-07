@@ -20,10 +20,11 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 from pymongo import MongoClient
-from database import db_read_df, db_read_grid
-from settings import MAX_X, MAX_Y, R, BEHAVIOUR, MOVIE
+from database import db_read_df, db_read_grid, db_read_dict
+from settings import SETTINGS
    
 # setup database
+MAX_X, MAX_Y, R,  MOVIE = (SETTINGS[k] for k in ('MAX_X', 'MAX_Y', 'R', 'MOVIE'))
 client = MongoClient()
 db = client.world    
 
@@ -49,6 +50,8 @@ ax3d.set_zlim3d(-1.0,1.0)
 def update(frame_number):
     global contour #, utility
     
+#    settings = db_read_dict(db, 'settings')
+#    MAX_X, MAX_Y, R,  MOVIE = (SETTINGS[k] for k in ('MAX_X', 'MAX_Y', 'R', 'MOVIE'))
     # read machines information 
     df = db_read_df(db)
     xi, yi, zi = db_read_grid(db, 'world')

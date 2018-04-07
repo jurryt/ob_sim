@@ -5,7 +5,7 @@ Created on Mon Apr  2 20:19:39 2018
 
 @author: jur
 """
-from settings import BEHAVIOUR, S, MIN_D, MAX_X, MAX_Y, tokens,master_keys
+from settings import tokens,master_keys
 from utils import dist, rnd_vec
 # alex - needs to be in bigchaindb
 from bigchaindb_driver import BigchainDB
@@ -17,7 +17,8 @@ from time import sleep
 #    def __init__(self, radius=5.0):
 #        self.radius = radius
         
-def set_df(df):
+def set_df(df, settings):
+    S, MIN_D, MAX_X, MAX_Y = (settings[k] for k in ('S', 'MIN_D', 'MAX_X', 'MAX_Y'))
     s = (df['machine_type']==__name__.split('.')[-1])
     
     col_x_trg, col_y_trg = 'x_trg', 'y_trg'                
