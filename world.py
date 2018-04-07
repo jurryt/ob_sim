@@ -55,13 +55,16 @@ def cost_function(df, selection, machine_id, settings):
     
     reward[machine_id]=-1.0
     
-    
-    zi = griddata((np.array([*fr.x.values, *fr.x_trg.values]), np.array([*fr.y.values, *fr.y_trg.values])), 
-                  np.array([*fr.cost.values, *reward]),
-                  (xi[None,:],yi[:,None]), 
-                  method=method,
-                  fill_value=0.0)
-    
+    #h = np.array([*fr.cost.values, *reward])
+    #if not all(h==0.0):
+    try:
+        zi = griddata((np.array([*fr.x.values, *fr.x_trg.values]), np.array([*fr.y.values, *fr.y_trg.values])), 
+                      np.array([*fr.cost.values, *reward]),
+                      (xi[None,:],yi[:,None]), 
+                      method=method,
+                      fill_value=0.0)
+    except:   
+        zi =np.zeros(len(xi))
     return xi, yi, zi
     
 #async def send_data(websocket, path):
@@ -70,10 +73,10 @@ def cost_function(df, selection, machine_id, settings):
 
 
 
-def world_gen()    :
+def world_gen(database_name='world')    :
 
     client = MongoClient()
-    db = client.world    
+    db = client[database_name]
     db_clear(db)
     
     t=time.clock()

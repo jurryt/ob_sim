@@ -10,7 +10,7 @@ from utils import dist, rnd_vec, update_metrics
 # alex - needs to be in bigchaindb
 from bigchaindb_driver import BigchainDB
 from time import sleep
-
+import urllib3
 
 # alex end 
 
@@ -124,7 +124,10 @@ def set_df(df, settings, metrics, db):
                     tx1,
                     private_keys=master_keys.private_key
                 )
-                sent_creation_tx = bdb.transactions.send(tx_signed1)
+                try:
+                    sent_creation_tx = bdb.transactions.send(tx_signed1)
+                except:
+                    break
                 txid = tx_signed1['id']
                 trials = 0
                 while trials < 10:

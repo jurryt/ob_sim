@@ -29,8 +29,8 @@ SETTINGS ={
 
 #INTERPOLATION = 'nearest'
 
-#HOST = 'localhost'
-HOST = '10.1.2.15'
+HOST = 'localhost'
+#HOST = '10.1.2.15'
 PORT = 10000
 
 # alex

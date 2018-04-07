@@ -19,6 +19,8 @@ import socket
 
 from socket_functions import sock_send_df, sock_send_grid
 
+import concurrent.futures
+
 
 import asyncio
 #import datetime
@@ -26,22 +28,100 @@ import websockets
 #import json
 
 from world import world_gen
-    
-async def send_data(websocket, path):
+import threading
+
+
+
+def send_data(websocket, path, use_socket=True):
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.connect((HOST, PORT))
-    
-    for df, grid in world_gen():
+
+    #async for message in websocket:
+    #    #await process(message)
+    #    print(message)
+    #t = threading.Thread(target=worker, args=[websocket])
+    #print(t.start())
+
+    #consumer_task = asyncio.ensure_future(consumer_handler(websocket, path))
+
+    #loop = asyncio.get_event_loop()
+    #blocking_tasks = [
+    #    loop.run_in_executor(executor, blocks, i)
+    #    for i in range(6)
+    #]
+    #loop.run_in_executor(executor, consumera_handler, websocket, path)    
+
+    for df, grid in world_gen(database_name='world'):
         #sock_send_grid(sock, 'world', grid['world']['x'], grid['world']['y'], grid['world']['z'])
-        sock_send_grid(sock, df)
-            
-        sock_send_df(sock, df)
-        await websocket.send(df.to_json(orient='records'))
+        # do this if you want blender connectivity
+        if use_socket:
+            sock_send_grid(sock, df)
+            sock_send_df(sock, df)
+
+        websocket.sendMessage(df.to_json(orient='records').encode('utf8'), False)
         #await asyncio.sleep(random.random() * 3)
 
 
-start_server = websockets.serve(send_data, '0.0.0.0', 5678)
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+
+
+
+#start_server = websockets.serve(handler, '0.0.0.0', 5678)
+#start_server2 = websockets.serve(consumer_handler, '0.0.0.0', 5679)
+
+
+#asyncio.get_event_loop().run_until_complete(start_server)
+#asyncio.get_event_loop().run_until_complete(start_server2)
+#asyncio.get_event_loop().run_forever()
+
+
+
+from autobahn.twisted.websocket import WebSocketServerProtocol, \
+    WebSocketServerFactory
+
+
+class MyServerProtocol(WebSocketServerProtocol):
+
+    def onConnect(self, request):
+        print("Client connecting: {0}".format(request.peer))
+
+    def onOpen(self):
+        print("WebSocket connection open.")
+        t = threading.Thread(target=send_data, args=[self, ""])
+        print(t.start())
+
+
+
+    def onMessage(self, payload, isBinary):
+        if isBinary:
+            print("Binary message received: {0} bytes".format(len(payload)))
+        else:
+            print("Text message received: {0}".format(payload.decode('utf8')))
+
+	
+        # echo back message verbatim
+        #self.sendMessage(payload, isBinary)
+
+    def onClose(self, wasClean, code, reason):
+        print("WebSocket connection closed: {0}".format(reason))
+
+
+if __name__ == '__main__':
+
+    import sys
+
+    from twisted.python import log
+    from twisted.internet import reactor
+
+    log.startLogging(sys.stdout)
+
+    factory = WebSocketServerFactory(u"ws://127.0.0.1:5678")
+    factory.protocol = MyServerProtocol
+    # factory.setProtocolOptions(maxConnections=2)
+
+    # note to self: if using putChild, the child must be bytes...
+
+    reactor.listenTCP(5678, factory)
+    reactor.run()
+
