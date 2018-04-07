@@ -16,7 +16,7 @@ TODO:
 
 from settings import HOST, PORT
 import socket
-
+import json
 from socket_functions import sock_send_df, sock_send_grid
 
 import concurrent.futures
@@ -30,6 +30,8 @@ import websockets
 from world import world_gen
 import threading
 
+from pymongo import MongoClient
+from database import db_read_df, db_update_df, db_clear, db_update_grid, db_update_dict, db_read_dict, db_insert_metrics
 
 
 def send_data(websocket, path, use_socket=True):
@@ -85,6 +87,9 @@ class MyServerProtocol(WebSocketServerProtocol):
 
     def onConnect(self, request):
         print("Client connecting: {0}".format(request.peer))
+        client = MongoClient()
+        self.db = client['world']
+
 
     def onOpen(self):
         print("WebSocket connection open.")
@@ -98,8 +103,15 @@ class MyServerProtocol(WebSocketServerProtocol):
             print("Binary message received: {0} bytes".format(len(payload)))
         else:
             print("Text message received: {0}".format(payload.decode('utf8')))
-
-	
+            #Text message received: {"simplebot":{"speed":"2.0","reward":"1.0","penalty":"1.0"}}
+            d = json.loads(payload)
+            d['simplebot'] = {k:float(v) for k,v in d['simplebot'].items()}
+            settings = {'machines' : d}
+            print(settings)
+            db_update_dict(self.db, 'settings', settings)
+            print('***')
+            print(db_read_dict(self.db, 'settings'))
+            print('***')	
         # echo back message verbatim
         #self.sendMessage(payload, isBinary)
 

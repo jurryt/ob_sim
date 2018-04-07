@@ -27,6 +27,9 @@ def set_df(df, settings, metrics, db):
     
     speed, reward, penalty = (settings['machines'][machine_type][k] for k in ('speed', 'reward', 'penalty'))
     
+#    print('********************************', speed, reward, penalty)
+    
+    
     col_x_trg, col_y_trg = 'x_trg', 'y_trg'                
 
 #    df.loc[s,'x_near'] = df.loc[s,'x_trg']
@@ -41,13 +44,13 @@ def set_df(df, settings, metrics, db):
         df.loc[ix,'y_near'] = df.loc[neighbour_ix,'y']
    
     # reward
-    reward = 1.0
+    #reward = 1.0
     df.loc[s,'ds'] = reward * dist(df.loc[s,'x'], df.loc[s,'y'], df.loc[s,col_x_trg], df.loc[s,col_y_trg])
     df.loc[s,'dx'] = df.loc[s,col_x_trg] - df.loc[s,'x']
     df.loc[s,'dy'] = df.loc[s,col_y_trg] - df.loc[s,'y']
 
     # penalty
-    penalty = 1.0#1.0
+    #penalty = 1.0#1.0
     df.loc[s,'ds1'] = penalty * dist(df.loc[s,'x'], df.loc[s,'y'], df.loc[s,'x_near'], df.loc[s,'y_near'])
     df.loc[s,'dx1'] = -(df.loc[s,'x_near'] - df.loc[s,'x'])
     df.loc[s,'dy1'] = -(df.loc[s,'y_near'] - df.loc[s,'y'])

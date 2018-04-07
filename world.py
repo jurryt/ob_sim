@@ -159,7 +159,7 @@ def world_gen(database_name='world')    :
             machine_module.set_df(df, settings, metrics, db)
         
         #update settings for failing bigchaindb
-        db_update_dict(db,'settings', settings)
+        db_update_dict(db,'settings', {'USE_BIGCHAINDB':settings['USE_BIGCHAINDB']})
         
         # velocity has been set by machines
         if 'u' in df.columns and 'v' in df.columns:
