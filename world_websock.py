@@ -61,8 +61,10 @@ def send_data(websocket, path, use_socket=True):
             sock_send_grid(sock, df)
             sock_send_df(sock, df)
 
-        websocket.sendMessage(df.to_json(orient='records').encode('utf8'), False)
-        websocket.sendMessage(json.dumps(metrics).encode('utf8'), False)
+        data = {'dataframe':df.to_dict(orient='records'), 'metrics':metrics}
+
+        #websocket.sendMessage(df.to_json(orient='records').encode('utf8'), False)
+        websocket.sendMessage(json.dumps(data).encode('utf8'), False)
         #await asyncio.sleep(random.random() * 3)
 
 
