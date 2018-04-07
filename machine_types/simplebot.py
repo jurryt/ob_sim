@@ -18,8 +18,11 @@ from time import sleep
 #        self.radius = radius
         
 def set_df(df, settings):
+    machine_type = __name__.split('.')[-1]
     S, MIN_D, MAX_X, MAX_Y = (settings[k] for k in ('S', 'MIN_D', 'MAX_X', 'MAX_Y'))
-    s = (df['machine_type']==__name__.split('.')[-1])
+    s = (df['machine_type']==machine_type)
+    
+    speed, reward, penalty = (settings['machines'][machine_type][k] for k in ('speed', 'reward', 'penalty'))
     
     col_x_trg, col_y_trg = 'x_trg', 'y_trg'                
 
@@ -51,11 +54,11 @@ def set_df(df, settings):
     selection = s & (df['ds']>0)
     #if not selection.empty:
     fr = df.loc[selection]
-    df.loc[selection,'u'] = fr.ds.clip_upper(S) * fr['dx']/fr['ds']
-    df.loc[selection,'v'] = fr.ds.clip_upper(S) * fr['dy']/fr['ds']
+    df.loc[selection,'u'] = fr.ds.clip_upper(speed) * fr['dx']/fr['ds']
+    df.loc[selection,'v'] = fr.ds.clip_upper(speed) * fr['dy']/fr['ds']
 
-    df.loc[selection,'u1'] = fr.ds.clip_upper(S) * fr['dx1']/fr['ds1']
-    df.loc[selection,'v1'] = fr.ds.clip_upper(S) * fr['dy1']/fr['ds1']
+    df.loc[selection,'u1'] = fr.ds.clip_upper(speed) * fr['dx1']/fr['ds1']
+    df.loc[selection,'v1'] = fr.ds.clip_upper(speed) * fr['dy1']/fr['ds1']
 
      # TODO: doesn't really work
 #    df.loc[selection,'u'] += df.loc[selection,'u1']

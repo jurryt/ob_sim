@@ -18,7 +18,10 @@ SETTINGS ={
 #BEHAVIOUR = 'solo'
 #BEHAVIOUR = 'gradient'
 
-    'MOVIE' : False #False|True
+    'MOVIE' : False, #False|True
+    
+    'machines':{'simplebot':{'speed':1.0,'reward':1.0,'penalty':1.0}}
+    
 
         }
 
