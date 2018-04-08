@@ -31,8 +31,8 @@ from utils import rnd_vec, dist
 from bigchaindb_driver.crypto import generate_keypair
 #alex end
 
-from machine_types import simplebot, roguebot
-machine_modules = (simplebot, roguebot)
+from machine_types import simplebot, roguebot, wigglebot
+machine_modules = (simplebot, roguebot, wigglebot)
 
 
 def cost_function(df, selection, machine_id, settings):
@@ -81,9 +81,9 @@ def world_gen(database_name='world')    :
     
     t=time.clock()
     metrics={
-        'collisions':{'simplebot':(t,0)},
-        'pickups':{'simplebot':(t,0)},
-        'dropoffs':{'simplebot':(t,0)},
+        'collisions':{'simplebot':(t,0), 'wigglebot':(t,0)},
+        'pickups':{'simplebot':(t,0), 'wigglebot':(t,0)},
+        'dropoffs':{'simplebot':(t,0), 'wigglebot':(t,0) },
         }
 
     #    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -136,7 +136,7 @@ def world_gen(database_name='world')    :
     df.loc[0,'blender_name'] = 'car.001'
     
     #df.loc[:N/2,'machine_type'] = 'simplebot'
-    df['machine_type'] = 'simplebot'
+    df['machine_type'] = 'simplebot'#'simplebot'#'wigglebot'#
     #MORTEN  BEGIN  
     df.loc[N-1,'machine_type'] = 'roguebot' #overwriting 1 so one rogue node availlable
     #MORTEN END

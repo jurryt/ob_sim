@@ -12,7 +12,7 @@ from time import sleep
 
 class roguebot:
     def __init__ (self, radius=5):
-        self.radius=5
+        self.radius=0.9
 
 def set_df(df, settings, metrics, db):
     machine_type = __name__.split('.')[-1]

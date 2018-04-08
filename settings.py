@@ -6,11 +6,11 @@ Created on Sat Mar 31 07:14:08 2018
 @author: jur
 """
 SETTINGS ={
-    'N' : 5,#100,#100#100#3#10
+    'N' : 5,#100,#100,#100#100#3#10
     'MAX_X' : 60,#-20#60
     'MAX_Y' : 60,#-20#30
     'S' : 1,#.1#1.0#0.1#1.0#.1#2 # fixed speed
-    'MIN_D' : 1e-4, # precision / minimal measurable distance
+    'MIN_D' : 0.01,#1e-4, # precision / minimal measurable distance
     'INTERPOLATION' : 'linear', #'cubic'#'linear' or 'nearest'  
     'R' :100,#200#00 # nr of runs
 
@@ -23,10 +23,9 @@ SETTINGS ={
     'MOVIE' : False, #False|True
     
     'machines':{'simplebot':{'speed':1.0,'reward':1.0,'penalty':1.0},
-                'roguebot':{'speed':1.0,'reward':1.0,'penalty':1.0}}
-    
-
-        }
+                'roguebot':{'speed':1.0,'reward':1.0,'penalty':1.0},
+                'wigglebot':{'speed':1.0,'reward':1.0,'penalty':1.0}}
+                }
 
 #INTERPOLATION = 'nearest'tokens = {}
 #alex
