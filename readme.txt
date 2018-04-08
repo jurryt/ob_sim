@@ -1,4 +1,4 @@
-Odd.Bot simulation environment
+Odd.Bot simulation environment created for the Blockchaingers Hackathon 2018 (Grunning)
 
 *** Works on Ubuntu linux with: ***
 
